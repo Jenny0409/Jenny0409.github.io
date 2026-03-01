@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合照马赛克工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 16px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+        
+        p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* 上传区域 */
+        .upload-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 12px;
+            padding: 32px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+        
+        .upload-area:hover {
+            border-color: #3498db;
+            background-color: #f9f9f9;
+        }
+        
+        .upload-area input[type="file"] {
+            display: none;
+        }
+        
+        .upload-area label {
+            display: block;
+            cursor: pointer;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .upload-area h3 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .upload-area p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* 图片区域 */
+        .image-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .image-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .image-container h2 {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        canvas {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            touch-action: none;
+        }
+        
+        /* 控制区域 */
+        .controls {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .controls h2 {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover,
+        .btn-primary:active {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover,
+        .btn-secondary:active {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover,
+        .btn-success:active {
+            background-color: #229954;
+        }
+        
+        /* 说明区域 */
+        .instructions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        /* 响应式调整 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                padding: 20px;
+            }
+            
+            .image-section {
+                flex-direction: row;
+            }
+            
+            .image-container {
+                flex: 1;
+            }
+            
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            canvas {
+                max-height: 400px;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .upload-area {
+                padding: 40px 20px;
+            }
+            
+            button {
+                padding: 16px 24px;
+            }
+            
+            canvas {
+                touch-action: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>合照马赛克工具</h1>
+            <p>轻松为合照中不想露脸的人打马赛克</p>
+        </header>
+        
+        <div class="upload-section">
+            <div class="upload-area">
+                <input type="file" id="fileInput" accept="image/*">
+                <label for="fileInput">
+                    <i class="fa fa-cloud-upload"></i>
+                    <h3>点击或拖拽上传照片</h3>
+                    <p>支持 JPG、PNG、GIF 等格式</p>
+                </label>
+            </div>
+        </div>
+        
+        <div class="image-section">
+            <div class="image-container">
+                <h2>原始照片</h2>
+                <div class="image-wrapper">
+                    <canvas id="originalCanvas"></canvas>
+                </div>
+            </div>
+            <div class="image-container">
+                <h2>处理后照片</h2>
+                <div class="image-wrapper">
+                    <canvas id="processedCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2>操作控制</h2>
+            <div class="control-group">
+                <label for="mosaicSize">马赛克大小: <span id="mosaicSizeValue">10</span>px</label>
+                <input type="range" id="mosaicSize" min="5" max="30" value="10">
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" id="clearButton">清除所有选择</button>
+                <button class="btn-secondary" id="undoButton">撤销上一步</button>
+                <button class="btn-success" id="downloadButton">下载处理后照片</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>使用说明</h2>
+            <ol>
+                <li>点击或拖拽上传一张合照</li>
+                <li>在左侧原始照片上点击并拖动，选择需要打马赛克的区域</li>
+                <li>调整马赛克大小滑块，设置合适的马赛克效果</li>
+                <li>右侧预览处理后的效果</li>
+                <li>点击下载按钮保存处理后的照片</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // 获取DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const processedCanvas = document.getElementById('processedCanvas');
+        const mosaicSize = document.getElementById('mosaicSize');
+        const mosaicSizeValue = document.getElementById('mosaicSizeValue');
+        const clearButton = document.getElementById('clearButton');
+        const undoButton = document.getElementById('undoButton');
+        const downloadButton = document.getElementById('downloadButton');
+        
+        // 获取Canvas上下文
+        const originalCtx = originalCanvas.getContext('2d');
+        const processedCtx = processedCanvas.getContext('2d');
+        
+        // 变量
+        let image = null;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let currentRect = { x: 0, y: 0, width: 0, height: 0 };
+        let rects = [];
+        let history = [];
+        
+        // 监听文件上传
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // 调整Canvas大小
+                    const maxWidth = 500;
+                    const maxHeight = 400;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > maxWidth) {
+                        const ratio = maxWidth / width;
+                        width = maxWidth;
+                        height = height * ratio;
+                    }
+                    
+                    if (height > maxHeight) {
+                        const ratio = maxHeight / height;
+                        height = maxHeight;
+                        width = width * ratio;
+                    }
+                    
+                    originalCanvas.width = width;
+                    originalCanvas.height = height;
+                    processedCanvas.width = width;
+                    processedCanvas.height = height;
+                    
+                    // 绘制图像
+                    originalCtx.drawImage(img, 0, 0, width, height);
+                    processedCtx.drawImage(img, 0, 0, width, height);
+                    
+                    image = img;
+                    rects = [];
+                    history = [];
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // 监听马赛克大小变化
+        mosaicSize.addEventListener('input', function() {
+            mosaicSizeValue.textContent = this.value;
+            if (image) {
+                redrawProcessedCanvas();
+            }
+        });
+        
+        // 处理触摸和鼠标事件的通用函数
+        function handleStart(e) {
+            if (!image) return;
+            
+            isDragging = true;
+            const rect = originalCanvas.getBoundingClientRect();
+            
+            // 处理触摸事件
+            if (e.type === 'touchstart') {
+                const touch = e.touches[0];
+                startX = touch.clientX - rect.left;
+                startY = touch.clientY - rect.top;
+            } else {
+                // 处理鼠标事件
+                startX = e.clientX - rect.left;
+                startY = e.clientY - rect.top;
+            }
+            
+            currentRect = { x: startX, y: startY, width: 0, height: 0 };
+        }
+        
+        function handleMove(e) {
+            if (!isDragging || !image) return;
+            
+            // 阻止默认行为，防止页面滚动
+            e.preventDefault();
+            
+            const rect = originalCanvas.getBoundingClientRect();
+            let currentX, currentY;
+            
+            // 处理触摸事件
+            if (e.type === 'touchmove') {
+                const touch = e.touches[0];
+                currentX = touch.clientX - rect.left;
+                currentY = touch.clientY - rect.top;
+            } else {
+                // 处理鼠标事件
+                currentX = e.clientX - rect.left;
+                currentY = e.clientY - rect.top;
+            }
+            
+            currentRect.width = currentX - startX;
+            currentRect.height = currentY - startY;
+            
+            // 重绘原始Canvas
+            originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+            originalCtx.drawImage(image, 0, 0, originalCanvas.width, originalCanvas.height);
+            
+            // 绘制所有已保存的矩形
+            rects.forEach(rect => {
+                drawRect(originalCtx, rect, 'rgba(0, 123, 255, 0.3)');
+            });
+            
+            // 绘制当前矩形
+            drawRect(originalCtx, currentRect, 'rgba(0, 123, 255, 0.3)');
+        }
+        
+        function handleEnd() {
+            if (!isDragging || !image) return;
+            
+            isDragging = false;
+            
+            // 保存矩形
+            if (Math.abs(currentRect.width) > 10 && Math.abs(currentRect.height) > 10) {
+                // 确保宽度和高度为正数
+                if (currentRect.width < 0) {
+                    currentRect.x += currentRect.width;
+                    currentRect.width = Math.abs(currentRect.width);
+                }
+                if (currentRect.height < 0) {
+                    currentRect.y += currentRect.height;
+                    currentRect.height = Math.abs(currentRect.height);
+                }
+                
+                rects.push({ ...currentRect });
+                history.push({ ...currentRect });
+                redrawProcessedCanvas();
+            }
+        }
+        
+        // 鼠标事件监听器
+        originalCanvas.addEventListener('mousedown', handleStart);
+        originalCanvas.addEventListener('mousemove', handleMove);
+        originalCanvas.addEventListener('mouseup', handleEnd);
+        originalCanvas.addEventListener('mouseleave', handleEnd);
+        
+        // 触摸事件监听器
+        originalCanvas.addEventListener('touchstart', handleStart, { passive: false });
+        originalCanvas.addEventListener('touchmove', handleMove, { passive: false });
+        originalCanvas.addEventListener('touchend', handleEnd);
+        originalCanvas.addEventListener('touchcancel', handleEnd);
+        
+        // 清除所有选择
+        clearButton.addEventListener('click', function() {
+            if (!image) return;
+            
+            rects = [];
+            history = [];
+            redrawCanvases();
+        });
+        
+        // 撤销上一步
+        undoButton.addEventListener('click', function() {
+            if (!image || rects.length === 0) return;
+            
+            rects.pop();
+            history.pop();
+            redrawCanvases();
+        });
+        
+        // 下载处理后照片
+        downloadButton.addEventListener('click', function() {
+            if (!image) return;
+            
+            const dataURL = processedCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'mosaic-processed.png';
+            link.href = dataURL;
+            link.click();
+        });
+        
+        // 绘制矩形
+        function drawRect(ctx, rect, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+        
+        // 应用马赛克效果
+        function applyMosaic(ctx, x, y, width, height, size) {
+            const imageData = ctx.getImageData(x, y, width, height);
+            const data = imageData.data;
+            
+            // 对每个马赛克块进行处理
+            for (let i = 0; i < height; i += size) {
+                for (let j = 0; j < width; j += size) {
+                    // 计算块内的平均颜色
+                    let r = 0, g = 0, b = 0, count = 0;
+                    
+                    for (let ni = 0; ni < size && i + ni < height; ni++) {
+                        for (let nj = 0; nj < size && j + nj < width; nj++) {
+                            const index = 4 * ((i + ni) * width + (j + nj));
+                            r += data[index];
+                            g += data[index + 1];
+                            b += data[index + 2];
+                            count++;
+                        }
+                    }
+                    
+                    r = Math.floor(r / count);
+                    g = Math.floor(g / count);
+                    b = Math.floor(b / count);
+                    
+                    // 填充马赛克块
+                    for (let ni = 0; ni < size && i + ni < height; ni++) {
+                        for (let nj = 0; nj < size && j + nj < width; nj++) {
+                            const index = 4 * ((i + ni) * width + (j + nj));
+                            data[index] = r;
+                            data[index + 1] = g;
+                            data[index + 2] = b;
+                        }
+                    }
+                }
+            }
+            
+            ctx.putImageData(imageData, x, y);
+        }
+        
+        // 重绘处理后的Canvas
+        function redrawProcessedCanvas() {
+            processedCtx.clearRect(0, 0, processedCanvas.width, processedCanvas.height);
+            processedCtx.drawImage(image, 0, 0, processedCanvas.width, processedCanvas.height);
+            
+            // 对每个矩形应用马赛克
+            const size = parseInt(mosaicSize.value);
+            rects.forEach(rect => {
+                applyMosaic(processedCtx, rect.x, rect.y, rect.width, rect.height, size);
+            });
+        }
+        
+        // 重绘所有Canvas
+        function redrawCanvases() {
+            // 重绘原始Canvas
+            originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+            originalCtx.drawImage(image, 0, 0, originalCanvas.width, originalCanvas.height);
+            
+            // 绘制所有已保存的矩形
+            rects.forEach(rect => {
+                drawRect(originalCtx, rect, 'rgba(0, 123, 255, 0.3)');
+            });
+            
+            // 重绘处理后的Canvas
+            redrawProcessedCanvas();
+        }
+    </script>
+</body>
+</html>
